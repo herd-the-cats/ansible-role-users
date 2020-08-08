@@ -1,0 +1,27 @@
+---
+# defaults file for users
+users_groups: []
+#- name: group1
+#  gid: 1111
+#  system: false
+
+users_accounts: []
+#- name: johndoe
+#  uid: 1111
+#  system: false
+#  shell: "/bin/bash"
+#  home: "/home/johndoe" # or omit
+#  create_home: true
+#  group: johndoe
+#  groups:
+#  - foo
+#  - bar
+#  - baz
+#  comment: "John Doe"
+#  auth_keys:
+#  - ssh-rsa blahblahblah
+#  password: #Vault me
+
+users_set_rootpw: false
+
+users_rootpw: ""

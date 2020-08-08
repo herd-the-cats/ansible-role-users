@@ -1,0 +1,60 @@
+---
+# tasks file for users
+
+- name: "Set root password."
+  user:
+    name: "root"
+    password: "{{ users_rootpw }}"
+    state: "present"
+  when: users_set_rootpw
+
+- name: "Create groups."
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: "present"
+  loop: "{{ users_groups }}"
+  when: users_groups[0].name is defined
+
+- name: "Create self-named user groups with matching gid."
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.uid | default(omit) }}"
+    state: "present"
+  loop: "{{ users_accounts }}"
+  when: users_accounts[0].name is defined
+
+- name: "Create user accounts."
+  user:
+    state: "present"
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    system: "{{ item.system | default(omit) }}"
+    home: "{{ item.home | default(omit) }}"
+    create_home: "{{ item.create_home | default(omit) }}"
+    group: "{{ item.group | default(item.name) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+    password: "{{ item.password | default(omit) }}"
+  loop: "{{ users_accounts }}"
+  when: users_accounts[0].name is defined
+
+- name: "Create .ssh directory."
+  file:
+    state: "directory"
+    path: "{{ item.home | default('/home/' ~ item.name) }}/.ssh"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: 0600
+  loop: "{{ users_accounts }}"
+  when: users_accounts[0].name is defined
+
+- name: "Add authorized public keys for users."
+  authorized_key:
+    user: "{{ item.name }}"
+    state: "present"
+    path: "{{ item.home | default('/home/' ~ item.name) }}/.ssh/authorized_keys"
+    key: "{{ item.auth_keys | join('\n') }}"
+    manage_dir: false
+  loop: "{{ users_accounts | selectattr('auth_keys','defined') | list }}"
+  when: users_accounts | selectattr('auth_keys','defined') | list | length > 0
