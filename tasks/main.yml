@@ -6,7 +6,10 @@
     name: "root"
     password: "{{ users_rootpw | password_hash('sha512') }}"
     state: "present"
-  when: users_set_rootpw
+  when:
+  - users_set_rootpw
+  - users_rootpw is defined
+  - users_rootpw | length > 0
 
 - name: "Create groups."
   group:
