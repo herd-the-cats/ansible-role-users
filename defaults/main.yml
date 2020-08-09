@@ -18,6 +18,9 @@ users_accounts: []
 #  - bar
 #  - baz
 #  comment: "John Doe"
+## Boolean attributes for roles
+#  dotfiles: true
+#  cinnamon: true
 #  auth_keys:
 #  - ssh-rsa blahblahblah
 #  password: #Vault me

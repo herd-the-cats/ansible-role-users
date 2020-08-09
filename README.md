@@ -1,31 +1,27 @@
-Role Name
+Users
 =========
 
-A brief description of the role goes here.
+This is a basic role to create both system and regular users and groups, including self-named groups for users with a matching gid to the uid.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Python passlib for generating password_hash
+- Ansible 2.9+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+users_groups - _groups besides self-named groups to create. Any groups listed in the users_accounts var need to exist here too._
+users_accounts - _user information as passed to the user module. Additionally, auth_keys to add ssh public keys to user accounts and extra booleans to intergrate with other roles such as herd-the-cats.dotfiles and herd-the-cats.cinnamon. Note: the password value will be rehashed each run._
+users_set_rootpw - _Boolean. Requires users_rootpw to be set. Set to false if looping this role._
+users_rootpw - _Vaulted variable with root password. Note: the password value will be rehashed each run._
+
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Booleans in users_accounts indicate whether to execute other herd-the-cats roles. These individual user values are accessed via varnames lookup, prepending "user_" and the user's name to the role variable to create user-specific settings that override the default, group, or host variables. E.g. "user_johndoe_dotf_git_repo".
 
 License
 -------
@@ -35,4 +31,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+herd-the-cats
