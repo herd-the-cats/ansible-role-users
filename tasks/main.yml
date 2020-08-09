@@ -4,7 +4,7 @@
 - name: "Set root password."
   user:
     name: "root"
-    password: "{{ users_rootpw }}"
+    password: "{{ users_rootpw | password_hash('sha512') }}"
     state: "present"
   when: users_set_rootpw
 
@@ -34,8 +34,9 @@
     create_home: "{{ item.create_home | default(omit) }}"
     group: "{{ item.group | default(item.name) }}"
     groups: "{{ item.groups | default(omit) }}"
+    append: true
     comment: "{{ item.comment | default(omit) }}"
-    password: "{{ item.password | default(omit) }}"
+    password: "{{ item.password | password_hash('sha512') | default(omit) }}"
   loop: "{{ users_accounts }}"
   when: users_accounts[0].name is defined
 
