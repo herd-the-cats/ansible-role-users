@@ -12,16 +12,16 @@ Requirements
 Role Variables
 --------------
 
-users_groups - _groups besides self-named groups to create. Any groups listed in the users_accounts var need to exist here too._
-users_accounts - _user information as passed to the user module. Additionally, auth_keys to add ssh public keys to user accounts and extra booleans to intergrate with other roles such as herd-the-cats.dotfiles and herd-the-cats.cinnamon. Note: the password value will be rehashed each run._
-users_set_rootpw - _Boolean. Requires users_rootpw to be set. Set to false if looping this role._
-users_rootpw - _Vaulted variable with root password. Note: the password value will be rehashed each run._
+- users\_groups - _groups besides self-named groups to create. Any groups listed in the users\_accounts var need to exist here too._
+- users\_accounts - _user information as passed to the user module. Additionally, auth\_keys to add ssh public keys to user accounts and extra booleans to intergrate with other roles such as herd-the-cats.dotfiles and herd-the-cats.cinnamon. Note: the password value will be rehashed each run._
+- users\_set\_rootpw - _Boolean. Requires users\_rootpw to be set. Set to false if looping this role._
+- users\_rootpw - _Vaulted variable with root password. Note: the password value will be rehashed each run._
 
 
 Dependencies
 ------------
 
-Booleans in users_accounts indicate whether to execute other herd-the-cats roles. These individual user values are accessed via varnames lookup, prepending "user_" and the user's name to the role variable to create user-specific settings that override the default, group, or host variables. E.g. "user_johndoe_dotf_git_repo".
+Booleans in users\_accounts indicate whether to execute other herd-the-cats roles. These individual user values are accessed via varnames lookup, prepending "user\_" and the user's name to the role variable to create user-specific settings that override the default, group, or host variables. E.g. "user\_johndoe\_dotf\_git\_repo".
 
 License
 -------
