@@ -1,11 +1,16 @@
 ---
 # tasks file for users
+- name: "Install Python passlib for password hashing."
+  include_tasks: "{{ ansible_distribution }}-passlib.yml"
+  when: users_install_passlib
+  become: true
 
 - name: "Set root password."
   user:
     name: "root"
     password: "{{ users_rootpw | password_hash('sha512') }}"
     state: "present"
+  become: true
   when:
   - users_set_rootpw
   - users_rootpw is defined
@@ -18,6 +23,7 @@
     state: "present"
     system: "{{ item.system | default(omit) }}"
   loop: "{{ users_groups }}"
+  become: true
   when: users_groups[0].name is defined
 
 - name: "Create self-named user groups with matching gid."
@@ -26,6 +32,7 @@
     gid: "{{ item.uid | default(omit) }}"
     state: "present"
   loop: "{{ users_accounts }}"
+  become: true
   when: users_accounts[0].name is defined
 
 - name: "Create user accounts."
@@ -42,6 +49,7 @@
     comment: "{{ item.comment | default(omit) }}"
     password: "{{ item.password | password_hash('sha512') | default(omit) }}"
   loop: "{{ users_accounts }}"
+  become: true
   when: users_accounts[0].name is defined
 
 - name: "Create .ssh directory."
@@ -52,6 +60,7 @@
     group: "{{ item.name }}"
     mode: 0600
   loop: "{{ users_accounts }}"
+  become: true
   when: users_accounts[0].name is defined
 
 - name: "Add authorized public keys for users."
@@ -62,4 +71,5 @@
     key: "{{ item.auth_keys | join('\n') }}"
     manage_dir: false
   loop: "{{ users_accounts | selectattr('auth_keys','defined') | list }}"
+  become: true
   when: users_accounts | selectattr('auth_keys','defined') | list | length > 0

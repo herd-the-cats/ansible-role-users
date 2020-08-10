@@ -28,3 +28,5 @@ users_accounts: []
 users_set_rootpw: false
 
 users_rootpw: ""
+
+users_install_passlib: true
