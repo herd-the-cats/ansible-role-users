@@ -1,8 +1,8 @@
 ---
 # defaults file for users
-users_groups: []
-#- name: group1
-#  gid: 1111
+users_groups_w_gids: []
+#- name: foo
+#  gid: 1212
 #  system: false
 
 users_accounts: []
@@ -12,21 +12,17 @@ users_accounts: []
 #  shell: "/bin/bash"
 #  home: "/home/johndoe" # or omit
 #  create_home: true
-#  group: johndoe
+#  group: johndoe # default to user name
 #  groups:
-#  - foo
-#  - bar
-#  - baz
+#  - name: foo
+#  - name: bar
+#  - name: baz
 #  comment: "John Doe"
-## Boolean attributes for roles
-#  dotfiles: true
-#  cinnamon: true
 #  auth_keys:
 #  - ssh-rsa blahblahblah
 #  password: #Vault me
 
 users_set_rootpw: false
 
+# Vault
 users_rootpw: ""
-
-users_install_passlib: true

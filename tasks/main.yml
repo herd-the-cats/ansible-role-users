@@ -2,29 +2,18 @@
 # tasks file for users
 - name: "Install Python passlib for password hashing."
   include_tasks: "{{ ansible_distribution }}-passlib.yml"
-  when: users_install_passlib
   become: true
 
 - name: "Set root password."
   user:
     name: "root"
-    password: "{{ users_rootpw | password_hash('sha512') }}"
+    password: "{{ users_rootpw | password_hash('sha512', 9999 | random(seed=inventory_hostname) | string) }}"
     state: "present"
   become: true
   when:
   - users_set_rootpw
   - users_rootpw is defined
   - users_rootpw | length > 0
-
-- name: "Create groups."
-  group:
-    name: "{{ item.name }}"
-    gid: "{{ item.gid | default(omit) }}"
-    state: "present"
-    system: "{{ item.system | default(omit) }}"
-  loop: "{{ users_groups }}"
-  become: true
-  when: users_groups[0].name is defined
 
 - name: "Create self-named user groups with matching gid."
   group:
@@ -34,6 +23,32 @@
   loop: "{{ users_accounts }}"
   become: true
   when: users_accounts[0].name is defined
+
+- name: "Create groups with specific gid."
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default(omit) }}"
+    system: "{{ item.system | default(omit) }}"
+    state: "present"
+  loop: "{{ users_groups_w_gids }}"
+  become: true
+  when:
+  - users_groups_w_gids[0].name is defined
+
+- name: "Create list of unique secondary user groups"
+  set_fact:
+    users_groups_unique: "{{ users_accounts | map(attribute='groups') | unique | list }}"
+  when:
+  - users_accounts[0].name is defined
+
+- name: "Create remaining secondary groups for users"
+  group:
+    name: "{{ item }}"
+    state: "present"
+  loop: "{{ users_groups_unique }}"
+  become: true
+  when:
+  - users_groups_unique | length > 0
 
 - name: "Create user accounts."
   user:
@@ -47,7 +62,7 @@
     groups: "{{ item.groups | default(omit) }}"
     append: true
     comment: "{{ item.comment | default(omit) }}"
-    password: "{{ item.password | password_hash('sha512') | default(omit) }}"
+    password: "{{ item.password | password_hash('sha512', 9999 | random(seed=inventory_hostname) | string) }}"
   loop: "{{ users_accounts }}"
   become: true
   when: users_accounts[0].name is defined
@@ -70,6 +85,6 @@
     path: "{{ item.home | default('/home/' ~ item.name) }}/.ssh/authorized_keys"
     key: "{{ item.auth_keys | join('\n') }}"
     manage_dir: false
-  loop: "{{ users_accounts | selectattr('auth_keys','defined') | list }}"
+  loop: "{{ users_accounts | selectattr('auth_keys','defined') | list | default([]) }}"
   become: true
   when: users_accounts | selectattr('auth_keys','defined') | list | length > 0
