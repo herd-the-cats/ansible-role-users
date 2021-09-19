@@ -2,12 +2,11 @@
 # tasks file for users
 - name: "Install Python passlib for password hashing."
   include_tasks: "{{ ansible_distribution }}-passlib.yml"
-  become: true
 
 - name: "Set root password."
   user:
     name: "root"
-    password: "{{ users_rootpw | password_hash('sha512', 9999 | random(seed=inventory_hostname) | string) }}"
+    password: "{{ users_rootpw | string | password_hash('sha512', (users_saltpad[::users_saltpad | length | random(seed=inventory_hostname)] ~ 999999 | random(seed=inventory_hostname) | string)[-16:]) }}"
     state: "present"
   become: true
   when:
@@ -62,9 +61,10 @@
     groups: "{{ item.groups | default(omit) }}"
     append: true
     comment: "{{ item.comment | default(omit) }}"
-    password: "{{ item.password | password_hash('sha512', 9999 | random(seed=inventory_hostname) | string) }}"
+    password: "{{ item.password | string | password_hash('sha512', (users_saltpad[::users_saltpad | length | random(seed=inventory_hostname)] ~ 999999 | random(seed=inventory_hostname) | string)[-16:]) | default(omit) }}"
   loop: "{{ users_accounts }}"
   become: true
+  no_log: true
   when: users_accounts[0].name is defined
 
 - name: "Create .ssh directory."
