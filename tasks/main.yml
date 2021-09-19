@@ -36,7 +36,7 @@
 
 - name: "Create list of unique secondary user groups"
   set_fact:
-    users_groups_unique: "{{ users_accounts | map(attribute='groups') | unique | list }}"
+    users_groups_unique: "{{ users_accounts | selectattr('groups','defined') | map(attribute='groups') | flatten | unique | list }}"
   when:
   - users_accounts[0].name is defined
 
