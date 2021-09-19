@@ -19,7 +19,7 @@
     name: "{{ item.name }}"
     gid: "{{ item.uid | default(omit) }}"
     state: "present"
-  loop: "{{ users_accounts }}"
+  loop: "{{ users_accounts | map('combine', {'password': 'REDACTED'}) | list }}"
   become: true
   when: users_accounts[0].name is defined
 
@@ -74,7 +74,7 @@
     owner: "{{ item.name }}"
     group: "{{ item.name }}"
     mode: 0600
-  loop: "{{ users_accounts }}"
+  loop: "{{ users_accounts | map('combine', {'password': 'REDACTED'}) | list }}"
   become: true
   when: users_accounts[0].name is defined
 
@@ -85,6 +85,6 @@
     path: "{{ item.home | default('/home/' ~ item.name) }}/.ssh/authorized_keys"
     key: "{{ item.auth_keys | join('\n') }}"
     manage_dir: false
-  loop: "{{ users_accounts | selectattr('auth_keys','defined') | list | default([]) }}"
+  loop: "{{ users_accounts | selectattr('auth_keys','defined') | map('combine', {'password': 'REDACTED'}) | list | default([]) }}"
   become: true
   when: users_accounts | selectattr('auth_keys','defined') | list | length > 0
