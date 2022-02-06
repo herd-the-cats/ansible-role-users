@@ -14,9 +14,9 @@ users_accounts: []
 #  create_home: true
 #  group: johndoe # default to user name
 #  groups:
-#  - name: foo
-#  - name: bar
-#  - name: baz
+#  - foo
+#  - bar
+#  - baz
 #  comment: "John Doe"
 #  auth_keys:
 #  - ssh-rsa blahblahblah
